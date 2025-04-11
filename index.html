@@ -8,8 +8,8 @@
     <meta name="theme-color" content="#f0f0f0">
     <title>الرماية التكتيكية</title>
     <link rel="apple-touch-icon" href="tr.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
      <!-- إضافة Manifest داخلي -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
      <script>
         const manifestData = {
             "name": "الرماية التكتيكية",
@@ -42,7 +42,11 @@
         body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; direction: rtl; }
         .container { max-width: 400px; margin: 0 auto; background-color: #f0f0f0; border: 0px solid #ccc; padding: 10px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-        .header h1 { font-size: 18px; margin: 5;}       
+        .header h1 { font-size: 18px; margin: 5;}
+        .button { background-color: #30336b; color: white; padding: 10px; text-align: center; margin: 10px 0; display: block; border-radius: 5px; cursor: pointer; }
+        .button:hover { background-color: #0056b3; }
+        .button.secondary { background-color: #30336b; }
+        .button.button.secondary:hover { background-color: #0c77e8; }
         .stage, .shooter, .team { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background-color: #f9f9f9; }
         .stage a, .shooter a { text-decoration: none; color: black; display: block; cursor: pointer; }
         .stage a:hover, .shooter a:hover { background-color: #e0e0e0; }
@@ -258,7 +262,7 @@
             background-color: #e5dbdb; /* خلفية رمادية فاتحة للصفوف الفردية */
         }
         /* تنسيق الأزرار لتتضمن الأيقونات */
-      
+        
        
    
 
@@ -292,77 +296,51 @@
             font-size: 22px; /* حجم خط أصغر قليلاً لزر "حفظ التعديل" إذا أردت تمييزه */
         }
         
-       /* القائمة السفلية */
+         /* القائمة السفلية */
        .bottom-nav {
             position: fixed;
-            bottom: 2%;
+            bottom: 3%;
             left: 0;
-            top: 87%;
+            top: 86%;
             left: 0;
             width: 100%;
-            background: linear-gradient(135deg, #203763, #203763);
-            padding: 2px 0;
+            background: linear-gradient(135deg, #203763, #273c75);
+            padding: 1px 0;
             display: flex;
             justify-content: space-around;
             border-top: 1px solid #333;
             z-index: 70;
         }
         
-        body.light .bottom-nav {
-            background: #ddd;
-            border-top: 1px solid #bbb;
-        }
-        
+          
         .nav-item {
             text-align: center;
             padding: 10px;
             cursor: pointer;
             transition: color 0.3s ease;
             color: white;
+           
         }
-        
-        .bottom-nav .nav-item.active {
-            color: #28a745;
-        }
-        
-        .bottom-nav .nav-item.active i {
-            color: #28a745;
-        }
-        
-        .bottom-nav .nav-item:hover {
-            color: #28a745;
-        }
-        
-        .bottom-nav .nav-item:hover i {
-            color: #28a745;
-        }
-        
-        body.light .nav-item {
-            color: #333333;
-        }
-        
-        body.light .bottom-nav .nav-item.active {
-            color: #28a745;
-        }
-        
-        body.light .bottom-nav .nav-item.active i {
-            color: #28a745;
-        }
-        
-        body.light .bottom-nav .nav-item:hover {
-            color: #28a745;
-        }
-        
-        body.light .bottom-nav .nav-item:hover i {
-            color: #28a745;
-        }
-        
         .nav-item i {
-            display: block;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             font-size: 20px;
             margin-bottom: 5px;
             transition: color 0.3s ease;
         }
+        
+        .bottom-nav .nav-item.active {
+            color: #BDFF3F;
+        }
+        
+        .bottom-nav .nav-item.active i {
+            color: #BDFF3F;
+        }
+        
+       
+        
+       
         /* لضمان عدم تداخل المحتوى مع القائمة السفلية */
         .container {
             padding-bottom: 60px; /* موجود بالفعل، لكن أكدته */
@@ -372,7 +350,7 @@
     </style>
 </head>
 <body>
-   
+
     <!-- Home Page -->
     <div id="home-page" class="page active">  
         <div class="container">
@@ -382,12 +360,13 @@
             <img src="tr.png" alt="رمز الر" style="width: 100px; height: 100px; margin-right: 140px;">     
             <div class="controls"></div>
             <img src="my4.png" style="width: 70px; height: 70px; margin-right: 150px;">
+            
         </div>
+        
     </div>
-
-    <!-- القائمة السفلية -->
+   
    <!-- القائمة السفلية -->
-    <div class="bottom-nav">
+   <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home-page')" id="home-btn">
             <i class="fas fa-home"></i>
             <span>الرئيسية</span>
@@ -408,10 +387,10 @@
             <i class="fas fa-chart-bar"></i>
             <span>النتائج</span>
         </div>
-       
-    </div>
-        
    
+    </div> 
+
+
     
 
     <!-- Enter Scores Page -->
@@ -691,6 +670,7 @@
         let timerInterval = null;
         let timerSeconds = 0;
         let isTimerRunning = false;
+        let startTime = 0;
         let editingStageIndex = null;
         let editingShooterIndex = null;
         let currentStageImage = null;
@@ -707,8 +687,7 @@
 
         const translations = {
             ar: {
-                title: "TACTICAL SHOOTING",
-                home: "الرئيسية",
+                title: "الرماية التكتيكية",
                 enterScores: "إدخال النتائج",
                 editShooters: "  الرماة",
                 buildStages: " المراحل",
@@ -742,7 +721,6 @@
             },
             en: {
                 title: "Tactical Shooting",
-                home: "Home",
                 enterScores: "Enter Scores",
                 editShooters: "Edit Shooters",
                 buildStages: "Build Stages",
@@ -780,24 +758,72 @@
         function showPage(pageId) {
             console.log(`محاولة عرض الصفحة: ${pageId}`);
             const pages = document.querySelectorAll('.page');
+            console.log(`عدد الصفحات الموجودة: ${pages.length}`);
             pages.forEach(page => page.classList.remove('active'));
             const page = document.getElementById(pageId);
             if (page) {
+                console.log(`تم العثور على الصفحة: ${pageId}`);
                 page.classList.add('active');
-                
-                // إدارة حالة active لعناصر القائمة السفلية
-                const navItems = document.querySelectorAll('.nav-item');
+        
+                // تحديث حالة القائمة السفلية
+                const navItems = document.querySelectorAll('.bottom-nav .nav-item');
                 navItems.forEach(item => {
                     item.classList.remove('active');
-                    // تعديل الشرط ليطابق الـ id الفعلي
-                    const expectedId = pageId.replace('-page', '-btn');
-                    if (item.id === expectedId) {
-                        item.classList.add('active');
-                        console.log(`تم إضافة active إلى: ${item.id}`);
-                    }
+                    console.log(`تم إزالة الكلاس active من: ${item.id}`);
                 });
+        
+                // إضافة الكلاس active إلى الزر المقابل للصفحة الحالية
+                let activeBtnId;
+                switch (pageId) {
+                    case 'home-page':
+                        activeBtnId = 'home-btn';
+                        break;
+                    case 'enter-scores-page':
+                        activeBtnId = 'enter-scores-btn';
+                        break;
+                    case 'build-stages-page':
+                        activeBtnId = 'build-stages-btn';
+                        break;
+                    case 'edit-shooters-page':
+                        activeBtnId = 'edit-shooters-btn';
+                        break;
+                    case 'view-results-page':
+                        activeBtnId = 'view-results-btn';
+                        break;
+                    default:
+                        activeBtnId = null;
+                }
+        
+                if (activeBtnId) {
+                    const activeBtn = document.getElementById(activeBtnId);
+                    if (activeBtn) {
+                        activeBtn.classList.add('active');
+                        console.log(`تم إضافة الكلاس active إلى: ${activeBtnId}`);
+                    } else {
+                        console.error(`لم يتم العثور على الزر: ${activeBtnId}`);
+                    }
+                }
+        
+                // تنظيف إدخال الصورة عند مغادرة صفحة إضافة المرحلة
+                if (pageId !== 'add-stage-page') {
+                    const stageImageUpload = document.getElementById('stageImageUpload');
+                    if (stageImageUpload) {
+                        stageImageUpload.value = ''; // إعادة تعيين حقل إدخال الملف
+                        console.log('تم إعادة تعيين حقل إدخال الصورة.');
+                    }
+                }
+                if (pageId === 'enter-scores-page') loadStagesForEnterScores();
+                if (pageId === 'stage-detail-page') loadShootersForStage();
+                if (pageId === 'add-score-page') loadScoreDetails();
+                if (pageId === 'edit-shooters-page') loadShooters();
+                if (pageId === 'build-stages-page') loadStages();
+                if (pageId === 'view-results-page') {
+                    console.log("تحميل فلتر المراحل ونتائج الصفحة...");
+                    loadStageFilter();
+                    loadResults();
+                }
             } else {
-                console.error(`الصفحة ${pageId} غير موجودة!`);
+                console.error(`الصفحة ${pageId} غير موجودة`);
             }
         }
 
@@ -1287,63 +1313,111 @@
 
         function toggleTimer() {
             const toggleBtn = document.getElementById('toggleTimerBtn');
-            const manualTimeInput = document.getElementById('manualTimeInput'); // الحصول على حقل الإدخال
-            if (!toggleBtn) {
-                console.error('زر Toggle Timer غير موجود');
-                return;
-            }
-            if (!manualTimeInput) {
-                console.error('حقل manualTimeInput غير موجود');
-                return;
-            }        
-
-            if (!isTimerRunning) {
-                // بدء التايمر
-                timerInterval = setInterval(() => {
-                    timerSeconds += 0.01; // زيادة الوقت بمقدار 0.01 ثانية
-                    const timerDisplay = document.getElementById('timerDisplay');
-                    if (timerDisplay) {
-                        timerDisplay.textContent = timerSeconds.toFixed(2); // تحديث العرض
-                    }
-                    updateScore(); // تحديث النتيجة بناءً على الوقت
-                }, 10); // تحديث كل 10 مللي ثانية
-                toggleBtn.textContent = translations[currentLang].start === "تشغيل" ? "إيقاف" : "Stop";
-                toggleBtn.style.backgroundColor = '#dc3545'; // لون أحمر للإيقاف
-                isTimerRunning = true;
-            } else {
-                // إيقاف التايمر
+            const manualInput = document.getElementById('manualTimeInput');
+        
+            if (isTimerRunning) {
+                // --- إيقاف المؤقت ---
                 clearInterval(timerInterval);
-                timerInterval = null;
-                const timerDisplay = document.getElementById('timerDisplay');
-                if (timerDisplay) {
-                    timerDisplay.textContent = timerSeconds.toFixed(2); // تثبيت الوقت الحالي
-                }
-                // تسجيل الوقت في حقل الإدخال
-                manualTimeInput.value = timerSeconds.toFixed(2); // تحديث حقل الإدخال بالوقت النهائي
-                toggleBtn.textContent = translations[currentLang].start; // "تشغيل" أو "Start"
-                toggleBtn.style.backgroundColor = '#007bff'; // لون أزرق للتشغيل
                 isTimerRunning = false;
-                updateScore(); // تحديث النتيجة النهائية بعد الإيقاف
+                toggleBtn.textContent = translations[currentLang].start; // أو "تشغيل"
+                toggleBtn.style.backgroundColor = '#30336b'; // لون زر البدء الأصلي
+        
+                // احسب وسجل الوقت المنقضي الدقيق عند التوقف
+                if (startTime) { // تأكد من أن المؤقت قد بدأ بالفعل
+                    const elapsedMilliseconds = Date.now() - startTime;
+                    timerSeconds = elapsedMilliseconds / 1000;
+                }
+                // قم بتحديث العرض والقيمة اليدوية للمرة الأخيرة
+                updateTimerDisplay();
+                 // تحديث النتيجة النهائية إذا كانت تعتمد على الوقت
+                 updateScore();
+        
+            } else {
+                // --- بدء المؤقت ---
+                // احسب وقت البدء، مع مراعاة الوقت المنقضي بالفعل إذا كان المؤقت متوقفًا مؤقتًا
+                // timerSeconds هنا هو الوقت الذي توقف عنده المؤقت آخر مرة أو تم إدخاله يدويًا
+                startTime = Date.now() - (timerSeconds * 1000);
+        
+                timerInterval = setInterval(() => {
+                    // احسب الوقت المنقضي الكلي منذ البدء
+                    const elapsedMilliseconds = Date.now() - startTime;
+                    timerSeconds = elapsedMilliseconds / 1000;
+                    updateTimerDisplay(); // تحديث العرض بشكل مستمر
+                }, 100); // تحديث العرض 10 مرات في الثانية لدقة وسلاسة أفضل
+        
+                isTimerRunning = true;
+                toggleBtn.textContent = 'إيقاف'; // أو استخدم translations[currentLang].stop إذا أضفتها
+                toggleBtn.style.backgroundColor = '#dc3545'; // لون زر الإيقاف
             }
         }
-        function updateManualTime(input) {
-            let value = input.value.replace(/[^0-9.]/g, ''); // إزالة أي أحرف غير رقمية أو نقطة
-            if (value.length > 2 && !value.includes('.')) {
-                value = value.slice(0, 2) + '.' + value.slice(2); // إضافة النقطة تلقائيًا
+
+        // استبدل الدالة resetTimer بالكامل بهذه النسخة المعدلة
+                function resetTimer() {
+            clearInterval(timerInterval); // أوقف المؤقت إذا كان يعمل
+            timerSeconds = 0;
+            startTime = 0; // إعادة تعيين وقت البدء
+            isTimerRunning = false;
+        
+            document.getElementById('timerDisplay').textContent = '00.00';
+            const toggleBtn = document.getElementById('toggleTimerBtn');
+            toggleBtn.textContent = translations[currentLang].start; // أو "تشغيل"
+            toggleBtn.style.backgroundColor = '#30336b'; // إعادة لون زر البدء
+        
+            // مسح حقل الإدخال اليدوي
+            const manualInput = document.getElementById('manualTimeInput');
+            if (manualInput) {
+                 manualInput.value = '';
             }
-            if (value.length > 5) value = value.slice(0, 5); // الحد الأقصى 99.99
-            const [seconds, milliseconds] = value.split('.').map(Number);
-            if (seconds > 99 || (milliseconds > 99 && milliseconds !== undefined)) value = '99.99';
-            input.value = value;
-            timerSeconds = parseFloat(value) || 0; // تحديث timerSeconds بناءً على الإدخال
-            document.getElementById('timerDisplay').textContent = timerSeconds.toFixed(2); // تحديث العرض
-            updateScore(); // تحديث النتيجة
+        
+            updateScore(); // أعد حساب النتيجة لأن الوقت تغير
+        }
+        
+        // استبدل الدالة updateTimerDisplay بهذه النسخة
+        // (تحديث بسيط لإضافة تحديث حقل الإدخال اليدوي)
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            // استخدم timerSeconds مباشرة وقم بتنسيقها لمنزلتين عشريتين
+            display.textContent = timerSeconds.toFixed(2);        
+
+            // قم بتحديث حقل الإدخال اليدوي ليعكس قيمة المؤقت الحالية
+            const manualInput = document.getElementById('manualTimeInput');
+            if (manualInput) {
+                 // يفضل تحديث الحقل اليدوي فقط عندما لا يكون المؤقت قيد التشغيل أو عند التوقف/الريست
+                 // لتجنب التعارض مع كتابة المستخدم. لكن للتبسيط، سنحدثه دائمًا هنا.
+                 // إذا واجهت مشاكل، يمكن تعديل هذا الشرط.
+                 manualInput.value = timerSeconds.toFixed(2);
+            }
+             // تحديث النتيجة بشكل مستمر إذا كانت تعتمد على الوقت
+             // قد يكون من الأفضل استدعاء updateScore() فقط عند الإيقاف أو الريست أو الإدخال اليدوي
+             // لتجنب الحسابات المتكررة. قم بإزالة السطر التالي إذا أردت ذلك.
+             updateScore();
+        }        
+
+        function updateManualTime(input) {
+            // أوقف المؤقت إذا كان يعمل عند إدخال الوقت يدويًا
+            if (isTimerRunning) {
+                toggleTimer(); // استدعاء toggle لإيقافه بشكل صحيح
+            }        
+
+            // تأكد من التعامل مع القيمة المدخلة كرقم
+            let manualTime = parseFloat(input.value);        
+
+            // تحقق إذا كانت القيمة غير صالحة أو سالبة
+            if (isNaN(manualTime) || manualTime < 0) {
+                manualTime = 0; // استخدم 0 كقيمة افتراضية
+                input.value = manualTime.toFixed(2); // قم بتحديث الحقل بالقيمة المصححة
+            }        
+
+            timerSeconds = manualTime; // قم بتعيين الوقت المنقضي بالقيمة اليدوية
+            startTime = 0; // أعد تعيين وقت البدء لأن الوقت اليدوي يتجاوز منطق المؤقت
+            updateTimerDisplay(); // قم بتحديث العرض بناءً على الإدخال اليدوي
+            updateScore(); // أعد حساب النتيجة
         }
         function resetTimer() {
             if (timerInterval) {
         clearInterval(timerInterval); // إيقاف التايمر إذا كان يعمل
         timerInterval = null;
-    }
+          }
             timerSeconds = 0;
             const timerDisplay = document.getElementById('timerDisplay');
             if (timerDisplay) timerDisplay.textContent = '00.00';
@@ -2147,15 +2221,13 @@
             document.querySelector('title').textContent = translations[lang].title;
             const title = document.getElementById('title');
             if (title) title.textContent = translations[lang].title + " 🎯";
-            const homeBtn = document.querySelector('#home-btn span');
-            if (homeBtn) homeBtn.textContent = lang === 'ar' ? 'الرئيسية' : 'Home';
-            const enterScoresBtn = document.querySelector('#enter-scores-btn span');
+            const enterScoresBtn = document.getElementById('enter-scores-btn');
             if (enterScoresBtn) enterScoresBtn.textContent = translations[lang].enterScores;
-            const editShootersBtn = document.querySelector('#edit-shooters-btn span');
+            const editShootersBtn = document.getElementById('edit-shooters-btn');
             if (editShootersBtn) editShootersBtn.textContent = translations[lang].editShooters;
-            const buildStagesBtn = document.querySelector('#build-stages-btn span');
+            const buildStagesBtn = document.getElementById('build-stages-btn');
             if (buildStagesBtn) buildStagesBtn.textContent = translations[lang].buildStages;
-            const viewResultsBtn = document.querySelector('#view-results-btn span');
+            const viewResultsBtn = document.getElementById('view-results-btn');
             if (viewResultsBtn) viewResultsBtn.textContent = translations[lang].viewResults;
             const backBtn = document.getElementById('back-btn');
             if (backBtn) backBtn.textContent = translations[lang].back;
@@ -2205,10 +2277,15 @@
             if (document.getElementById('shooting-details-page')?.classList.contains('active')) {
                 loadShootingDetails();
             }
+            if (document.getElementById('view-results-page')?.classList.contains('active')) {
+                loadStageFilter();
+                loadResults();
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             switchLanguage('ar');
+            showPage('home-page');
             console.log('تم تحميل الصفحة الرئيسية وتهيئة الأحداث');
             console.log("Initial shooters:", JSON.parse(localStorage.getItem('shooters') || '[]'));
             console.log("Initial shooter scores:", JSON.parse(localStorage.getItem('shooterScores') || '[]'));
