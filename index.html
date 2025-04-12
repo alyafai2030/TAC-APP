@@ -219,7 +219,11 @@
             font-size: 15px;
             border: 1px solid #2d95da;
         }        
-
+        @media (min-width: 768px) {
+        #add-score-page .container {
+            padding-bottom: 150px !important; /* زيادة المسافة على الشاشات الكبيرة */
+            }
+        }
         @media (max-width: 768px) {
             .results-table table {
                 font-size: 12px;
@@ -297,17 +301,16 @@
        /* القائمة السفلية */
        .bottom-nav {
             position: fixed;
-            bottom: 3%;
-            left: 0;
-            top: 86%;
+            bottom: 0;
             left: 0;
             width: 100%;
             background: linear-gradient(135deg, #203763, #273c75);
-            padding: 1px 0;
+            padding: 5px 0;
             display: flex;
             justify-content: space-around;
             border-top: 1px solid #333;
             z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom); /* دعم للأجهزة المحمولة */
         }
         
         body.light .bottom-nav {
@@ -363,7 +366,8 @@
         .nav-item i {
             display: block;
             font-size: 20px;
-            margin-bottom: 5px;
+            margin-bottom: 1px;
+            margin-top: 1px; /* مسافة من الأعلى */
             transition: color 0.3s ease;
         }
         #home-page img[src="my4.png"] {
@@ -381,6 +385,8 @@
         /* ضبط الجدول ليكون مرئيًا بالكامل */
         #scoreTable {
             margin-bottom: 20px; /* مسافة إضافية أسفل الجدول */
+            width: 100%;
+            border-collapse: collapse;
         }
         
         /* ضمان أن المحتوى لا يتداخل مع الشريط السفلي */
@@ -391,10 +397,20 @@
         .container {
             padding-bottom: 60px; /* موجود بالفعل، لكن أكدته */
         }
+        /* ضبط صفحة إدخال النتائج */
         #add-score-page .container {
-            padding-bottom: 100px; /* زيادة المسافة لضمان ظهور النص أعلى الشريط السفلي */
+            height: 100vh; /* ارتفاع الحاوية يساوي ارتفاع الشاشة */
+            overflow-y: auto; /* تمكين التمرير العمودي */
+            padding-bottom: 120px; /* زيادة المسافة لتجنب التداخل مع الشريط السفلي */
+            box-sizing: border-box;
         }
-
+        #add-score-page p {
+            margin-bottom: 30px; /* مسافة إضافية أسفل النص */
+            text-align: center; /* محاذاة النص في المنتصف */
+        }
+        .bottom-nav.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -878,15 +894,15 @@
             const page = document.getElementById(pageId);
             if (page) {
                 console.log(`تم العثور على الصفحة: ${pageId}`);
-                page.classList.add('active');
-        
+                page.classList.add('active');        
+
                 // تحديث حالة القائمة السفلية
                 const navItems = document.querySelectorAll('.bottom-nav .nav-item');
                 navItems.forEach(item => {
                     item.classList.remove('active');
                     console.log(`تم إزالة الكلاس active من: ${item.id}`);
-                });
-        
+                });        
+
                 // إضافة الكلاس active إلى الزر المقابل للصفحة الحالية
                 let activeBtnId;
                 switch (pageId) {
@@ -907,8 +923,8 @@
                         break;
                     default:
                         activeBtnId = null;
-                }
-        
+                }        
+
                 if (activeBtnId) {
                     const activeBtn = document.getElementById(activeBtnId);
                     if (activeBtn) {
@@ -917,8 +933,8 @@
                     } else {
                         console.error(`لم يتم العثور على الزر: ${activeBtnId}`);
                     }
-                }
-        
+                }        
+
                 // تنظيف إدخال الصورة عند مغادرة صفحة إضافة المرحلة
                 if (pageId !== 'add-stage-page') {
                     const stageImageUpload = document.getElementById('stageImageUpload');
@@ -926,7 +942,11 @@
                         stageImageUpload.value = ''; // إعادة تعيين حقل إدخال الملف
                         console.log('تم إعادة تعيين حقل إدخال الصورة.');
                     }
-                }
+                }        
+
+                // تحديث حالة الشريط السفلي بعد تغيير الصفحة
+                updateBottomNavVisibility();        
+
                 if (pageId === 'enter-scores-page') loadStagesForEnterScores();
                 if (pageId === 'stage-detail-page') loadShootersForStage();
                 if (pageId === 'add-score-page') loadScoreDetails();
@@ -2460,6 +2480,27 @@
               });
           });
         }
+        // التحكم في إظهار/إخفاء الشريط السفلي
+        const bottomNav = document.querySelector('.bottom-nav');
+        
+        // دالة لتحديث حالة الشريط السفلي بناءً على الصفحة النشطة
+        function updateBottomNavVisibility() {
+            const activePage = document.querySelector('.page.active');
+            if (activePage && activePage.id === 'add-score-page') {
+                bottomNav.classList.add('hidden'); // إخفاء الشريط السفلي
+            } else {
+                bottomNav.classList.remove('hidden'); // إظهار الشريط السفلي
+            }
+        }
+        
+        
+        
+        // تحديث حالة الشريط السفلي عند تبديل الصفحات
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                updateBottomNavVisibility(); // تحديث حالة الشريط عند تغيير الصفحة
+            });
+        });
     </script>
 </body>
 </html>
