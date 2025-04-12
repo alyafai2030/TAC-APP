@@ -8,8 +8,8 @@
     <meta name="theme-color" content="#f0f0f0">
     <title>الرماية التكتيكية</title>
     <link rel="apple-touch-icon" href="tr.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
      <!-- إضافة Manifest داخلي -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
      <script>
         const manifestData = {
             "name": "الرماية التكتيكية",
@@ -42,11 +42,7 @@
         body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; direction: rtl; }
         .container { max-width: 400px; margin: 0 auto; background-color: #f0f0f0; border: 0px solid #ccc; padding: 10px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-        .header h1 { font-size: 18px; margin: 5;}
-        .button { background-color: #30336b; color: white; padding: 10px; text-align: center; margin: 10px 0; display: block; border-radius: 5px; cursor: pointer; }
-        .button:hover { background-color: #0056b3; }
-        .button.secondary { background-color: #30336b; }
-        .button.button.secondary:hover { background-color: #0c77e8; }
+        .header h1 { font-size: 18px; margin: 5;}       
         .stage, .shooter, .team { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background-color: #f9f9f9; }
         .stage a, .shooter a { text-decoration: none; color: black; display: block; cursor: pointer; }
         .stage a:hover, .shooter a:hover { background-color: #e0e0e0; }
@@ -86,6 +82,8 @@
         .stage-actions .delete-btn:hover { background-color: #b02a37; }
         .stage-divider { border: 0; height: 1px; background: #ccc; margin: 10px 0; }
         .view-results-page .delete-btn:hover { background-color: #b02a37; }
+         /* تنسيق الصورة my4.png */
+       
         
         /* تنسيق جديد لـ top-controls */
         .top-controls {
@@ -262,7 +260,7 @@
             background-color: #e5dbdb; /* خلفية رمادية فاتحة للصفوف الفردية */
         }
         /* تنسيق الأزرار لتتضمن الأيقونات */
-        
+      
        
    
 
@@ -296,7 +294,7 @@
             font-size: 22px; /* حجم خط أصغر قليلاً لزر "حفظ التعديل" إذا أردت تمييزه */
         }
         
-         /* القائمة السفلية */
+       /* القائمة السفلية */
        .bottom-nav {
             position: fixed;
             bottom: 3%;
@@ -309,25 +307,21 @@
             display: flex;
             justify-content: space-around;
             border-top: 1px solid #333;
-            z-index: 70;
+            z-index: 1000;
         }
         
-          
+        body.light .bottom-nav {
+            background: #f5f6fa;
+            border-top: 1px solid #f5f6fa;
+        }
+        
         .nav-item {
             text-align: center;
             padding: 10px;
             cursor: pointer;
             transition: color 0.3s ease;
             color: white;
-           
-        }
-        .nav-item i {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            font-size: 20px;
-            margin-bottom: 5px;
-            transition: color 0.3s ease;
+            
         }
         
         .bottom-nav .nav-item.active {
@@ -338,35 +332,88 @@
             color: #BDFF3F;
         }
         
+        .bottom-nav .nav-item:hover {
+            color: #BDFF3F;
+        }
+        
+        .bottom-nav .nav-item:hover i {
+            color: #BDFF3F;
+        }
+        
+        body.light .nav-item {
+            color: #333333;
+        }
+        
+        body.light .bottom-nav .nav-item.active {
+            color: #28a745;
+        }
+        
+        body.light .bottom-nav .nav-item.active i {
+            color: #28a745;
+        }
+        
+        body.light .bottom-nav .nav-item:hover {
+            color: #28a745;
+        }
+        
+        body.light .bottom-nav .nav-item:hover i {
+            color: #28a745;
+        }
+        
+        .nav-item i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+        #home-page img[src="my4.png"] {
+            width: 90px;
+            height: 90px;
+            display: block;
+            margin-top: 230px;
+            margin-left: auto;
+            margin-right: auto; /* توسيط عمودي */
+            /* توسيط أفقي ومسافة من الأسفل */
+           
+        }
        
         
-       
+        /* ضبط الجدول ليكون مرئيًا بالكامل */
+        #scoreTable {
+            margin-bottom: 20px; /* مسافة إضافية أسفل الجدول */
+        }
+        
+        /* ضمان أن المحتوى لا يتداخل مع الشريط السفلي */
+        .container {
+            padding-bottom: 70px;
+        }
         /* لضمان عدم تداخل المحتوى مع القائمة السفلية */
         .container {
             padding-bottom: 60px; /* موجود بالفعل، لكن أكدته */
         }
-       
+        #add-score-page .container {
+            padding-bottom: 100px; /* زيادة المسافة لضمان ظهور النص أعلى الشريط السفلي */
+        }
 
     </style>
 </head>
 <body>
-
+   
     <!-- Home Page -->
     <div id="home-page" class="page active">  
         <div class="container">
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
                 <h1 style="text-align: center; color: #0f0f10; margin: 0;"> الرماية التكتيكية</h1>
             </div>
-            <img src="tr.png" alt="رمز الر" style="width: 100px; height: 100px; margin-right: 140px;">     
+            <img src="tr.png" alt="رمز الر" style="width: 150px; height: 150px; margin-right: 140px;">     
             <div class="controls"></div>
-            <img src="my4.png" style="width: 70px; height: 70px; margin-right: 150px;">
-            
+            <img src="my4.png" style="width: 90px; height: 90px;" alt="صورة رمزية">
         </div>
-        
     </div>
-   
+
+    
    <!-- القائمة السفلية -->
-   <div class="bottom-nav">
+    <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home-page')" id="home-btn">
             <i class="fas fa-home"></i>
             <span>الرئيسية</span>
@@ -387,8 +434,8 @@
             <i class="fas fa-chart-bar"></i>
             <span>النتائج</span>
         </div>
-   
-    </div> 
+       
+    </div>
 
 
     
@@ -396,11 +443,15 @@
     <!-- Enter Scores Page -->
     <div id="enter-scores-page" class="page">
         <div class="container">
-            <div class="header">
-                <div onclick="showPage('home-page')" id="back-btn">رجوع</div>
-                <h1 id="enter-scores-title" style="margin-right: 100px;">اختار المرحلة</h1>
-                <img src="stage.png" alt="رمز الر " style="width: 20px; height: 20px; margin-right: 110px; color: #f7f6f6;"> 
-                <span></span>
+            <div class="header">               
+                <div style="padding-left: 5%; color: #3a12af;font-size: 24px;" onclick="showPage('home-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 id="enter-scores-title" style="text-align: center;">اختار المرحلة</h1>
+                <img src="8.png" alt="رمز الر " style="width: 30px; height: 30px; padding-right: 10%; color: #f0f0f0;"> 
+               
+                
             </div>
             <div id="stagesList1">
                 <!-- سيتم ملؤها ديناميكيًا -->
@@ -412,8 +463,12 @@
     <div id="stage-detail-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('enter-scores-page')" id="back-btn-stage-detail">رجوع</div>
-                <h1 id="stage-detail-title"></h1>
+                
+                <div style="padding-left: 5%; color: #3a12af;font-size: 24px;" onclick="showPage('enter-scores-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 style="text-align: center;" id="stage-detail-title"></h1>
                 <span id="stage-detail-progress">0/0</span>
             </div>
             <div class="form-group">
@@ -432,9 +487,17 @@
     <!-- Add Score Page -->
     <div class="page" id="add-score-page">
         <div class="top-controls"> 
-            <div onclick="showPage('stage-detail-page')" id="back-btn-stage-detail">رجوع</div>
-            <h2>ادخال النتائج</h2>
-            <button class="save-btn" onclick="saveShooterScore()" style="font-size: 14px;">حفظ النتيجة</button>
+            
+            <div style="padding-right: 2%; color: #3a12af;font-size: 24px;" onclick="showPage('stage-detail-page')">
+                <i class="fa-solid fa-arrow-right"></i>
+                <span></span>
+            </div>
+            <h2 style="text-align: center;">ادخال النتائج</h2>
+            
+            <div onclick="saveShooterScore()" style="font-size: 24px; margin-right: 20px;">
+                <i class="fa-sharp fa-solid fa-floppy-disk" style="color: #3a12af;"></i>
+                <span></span>
+            </div>
         </div>
         <div style="margin-bottom: 15px;">
             <div style="font-weight: bold;">الرامي: <span id="shooter-name"></span></div>
@@ -481,9 +544,16 @@
     <div id="edit-shooters-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('home-page')">رجوع</div>
-                <h1 id="edit-shooters-title" style="margin-right:  10px;">الرماة</h1>
-                <div onclick="showPage('add-shooter-page')" style="margin-left: 20px;"> إضافة + </div>
+                
+                <div style="padding-left: 5%; color: #3a12af;" onclick="showPage('home-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 id="edit-shooters-title" style="text-align: center; font-size: 22px;">الرماة</h1>
+                <div onclick="showPage('add-shooter-page')" style="padding-right: 5%;">   
+                    <i class="fa-solid fa-user-plus fa-lg" style="color: #0d47ab;"></i>
+                    <span> </span>
+                </div>
             </div>
             <div id="shootersList">
                 <!-- سيتم ملؤها ديناميكيًا -->
@@ -496,9 +566,16 @@
     <div id="add-shooter-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('edit-shooters-page')">رجوع</div>
-                <h1 id="add-shooter-title">إضافة رامي</h1>
-                <div onclick="saveShooter()" style="font-size: 24px; margin-left: 30px;">حفظ</div>
+                
+                <div style="padding-left: 5%; color: #3a12af;" onclick="showPage('edit-shooters-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 style="text-align: center; font-size: 20px;" id="add-shooter-title">إضافة رامي</h1>
+                <div onclick="saveShooter()" style="font-size: 24px; padding-right:  7%;">
+                    <i class="fa-sharp fa-solid fa-floppy-disk" style="color: #3a12af;"></i>
+                    <span></span>
+                </div>
             </div>
             <div class="form-group">
                 <label id="first-name-label">الاسم الأول</label>
@@ -523,9 +600,16 @@
     <div id="build-stages-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('home-page')">رجوع</div>
-                <h1 style="margin-right:90px;">بناء المراحل</h1>
-                <div  onclick="showAddStagePage()" style="font-size: 24px; margin-right: 70px;">إضافة +</div>        
+                
+                <div style="padding-left: 25%; color: #3a12af;" onclick="showPage('home-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 style="text-align: center;">بناء المراحل</h1>
+                <div  onclick="showAddStagePage()" style="font-size: 22px; margin-inline-start: 20%;">
+                    <i class="fa-solid fa-map fa-lg" style="color: #0b419d;"></i>
+                    <span>+</span>
+                </div>        
                 <span></span>
             </div>
             <table class="stages-table" id="stagesList">
@@ -549,9 +633,17 @@
     <div id="add-stage-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('build-stages-page')" id="add-stage-back-btn">رجوع</div>
+
+                <div style="padding-left: 5%; color: #3a12af;" onclick="showPage('build-stages-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
                 <h1 id="add-stage-title">إضافة مرحلة</h1>            
-                <div  onclick="saveStage()" style="font-size: 24px; margin-left: 30px;">حفظ</div>
+                
+                <div onclick="saveStage()" style="font-size: 24px; padding-right:  7%;">
+                    <i class="fa-sharp fa-solid fa-floppy-disk" style="color: #3a12af;"></i>
+                    <span></span>
+                </div>
             </div>
             <div class="form-group">
                 <label id="stage-name-label">المرحلة</label>
@@ -582,10 +674,15 @@
     <div id="view-results-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('home-page')">رجوع</div>
-                <h1 style="margin-right:110px;"> النتائج</h1>
+                <div style="padding-left: 30%; color: #3a12af;" onclick="showPage('build-stages-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 style="text-align: center; "> النتائج</h1>
                 <!-- زر حذف جميع النتائج -->
-                <div class="button secondary" style="background-color: #eb3b5a; margin-right: 60px; color: white; width: 80px; height: 10px;" onclick="clearAllResults()">حذف الجميع </div>
+                <div class="button secondary" style="color: red; font-size:large; margin-inline-start:  30%;"  onclick="clearAllResults()">  
+                    <i class="fa-solid fa-trash-can"></i>
+                </div>
                 <span></span>
             </div>
             <div class="form-group">
@@ -600,10 +697,21 @@
             </div>
             <!-- أزرار الإجراءات -->
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <div class="button" style="background-color: #424eb8; width:90px; height: 10px; color: white;" onclick="shareResults()">مشاركة النتائج</div>
-                <div class="button" style="background-color: #30336b; width:90px; height: 10px; color: white;"  onclick="showPage('shooting-details-page'); loadShootingDetails();">تفاصيل الرماية</div> 
-                                                                  <!-- تغيير لون خط الزر --> 
+               
+                <div class="button" style="  text-align:center; color: #070707;font-size:large;" onclick="shareResults()">
+                    <i class="fa-sharp fa-solid fa-share-nodes fa-lg" style="color: #053fa3;"></i>
+                    <span>مشاركة</span>
+                </div>
+               
+                <div class="button" style=" width:90px; height: 20px; text-align:center; color: #050505; font-size:large;"  onclick="showPage('shooting-details-page'); loadShootingDetails()">
+                    <i class="fa-solid fa-calendar-days fa-lg" style="color: #073e9c;"></i>
+                    <span>تفاصيل</span>
+                </div>
+                                                               <!-- تغيير لون خط الزر --> 
             </div>
+            
+
+
             <div class="results-table">
                 <table>
                     <thead>
@@ -626,9 +734,16 @@
     <div id="shooting-details-page" class="page">
         <div class="container">
             <div class="header">
-                <div onclick="showPage('view-results-page')">رجوع</div>
-                <h1 style="margin-right:60px;">تفاصيل الرماية</h1>
-                <div class="button" style="background-color: #30336b; margin-right: 30px; width:100px; height: 10px; color: white" onclick="shareShootingDetails()">مشاركة التفاصيل</div>
+                <div style="padding-left: 25%; color: #3a12af;" onclick="showPage('view-results-page')">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span></span>
+                </div>
+                <h1 style="text-align: center;">تفاصيل الرماية</h1>
+                
+                <div class="button" style="  text-align:center; margin-inline-start: 20%; color: #3a12af;font-size:large;" onclick="shareShootingDetails()">
+                    <i class="fa-sharp fa-solid fa-share-nodes fa-lg" style="color: #3a12af;"></i>
+                    <span>مشاركة</span>
+                </div>
                 <span></span>
             </div>
             <div class="form-group">
@@ -2221,13 +2336,15 @@
             document.querySelector('title').textContent = translations[lang].title;
             const title = document.getElementById('title');
             if (title) title.textContent = translations[lang].title + " 🎯";
-            const enterScoresBtn = document.getElementById('enter-scores-btn');
+            const homeBtn = document.querySelector('#home-btn span');
+            if (homeBtn) homeBtn.textContent = lang === 'ar' ? 'الرئيسية' : 'Home';
+            const enterScoresBtn = document.querySelector('#enter-scores-btn span');
             if (enterScoresBtn) enterScoresBtn.textContent = translations[lang].enterScores;
-            const editShootersBtn = document.getElementById('edit-shooters-btn');
+            const editShootersBtn = document.querySelector('#edit-shooters-btn span');
             if (editShootersBtn) editShootersBtn.textContent = translations[lang].editShooters;
-            const buildStagesBtn = document.getElementById('build-stages-btn');
+            const buildStagesBtn = document.querySelector('#build-stages-btn span');
             if (buildStagesBtn) buildStagesBtn.textContent = translations[lang].buildStages;
-            const viewResultsBtn = document.getElementById('view-results-btn');
+            const viewResultsBtn = document.querySelector('#view-results-btn span');
             if (viewResultsBtn) viewResultsBtn.textContent = translations[lang].viewResults;
             const backBtn = document.getElementById('back-btn');
             if (backBtn) backBtn.textContent = translations[lang].back;
@@ -2277,15 +2394,10 @@
             if (document.getElementById('shooting-details-page')?.classList.contains('active')) {
                 loadShootingDetails();
             }
-            if (document.getElementById('view-results-page')?.classList.contains('active')) {
-                loadStageFilter();
-                loadResults();
-            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             switchLanguage('ar');
-            showPage('home-page');
             console.log('تم تحميل الصفحة الرئيسية وتهيئة الأحداث');
             console.log("Initial shooters:", JSON.parse(localStorage.getItem('shooters') || '[]'));
             console.log("Initial shooter scores:", JSON.parse(localStorage.getItem('shooterScores') || '[]'));
