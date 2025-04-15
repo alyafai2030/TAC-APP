@@ -304,12 +304,12 @@
             bottom: 0;         
             left: 0;
             width: 100%;
-            background: linear-gradient(135deg, #203763, #273c75);
+            background: linear-gradient(135deg, #fafbfc, #f2f3f4);
             top: 600 !important; /* تأكد من أن الشريط السفلي يظهر فوق المحتوى */
             height: 80px; /* ارتفاع الشريط السفلي */
             display: flex;
             justify-content: space-around;
-            border-top: 1px solid #333;
+            
             z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom); /* دعم للأجهزة المحمولة */
         }
@@ -324,24 +324,24 @@
             padding: 5px;
             cursor: pointer;
             transition: color 0.3s ease;
-            color: white;
+            color: rgb(11, 11, 11);
             
         }
         
         .bottom-nav .nav-item.active {
-            color: #BDFF3F;
+            color: #0d2e7f;
         }
         
         .bottom-nav .nav-item.active i {
-            color: #BDFF3F;
+            color: #0d2e7f;
         }
         
         .bottom-nav .nav-item:hover {
-            color: #BDFF3F;
+            color: #1e3799;
         }
         
         .bottom-nav .nav-item:hover i {
-            color: #BDFF3F;
+            color: #1e3799;
         }
         
         body.light .nav-item {
@@ -462,7 +462,7 @@
    <!-- القائمة السفلية -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home-page')" id="home-btn">
-            <i class="fas fa-home"></i>
+            <i class="fas fa-thin fa-house"></i>
             <span>الرئيسية</span>
         </div>
         <div class="nav-item" onclick="showPage('enter-scores-page')" id="enter-scores-btn">
@@ -470,7 +470,7 @@
             <span>إدخال النتائج</span>
         </div>
         <div class="nav-item" onclick="showPage('build-stages-page')" id="build-stages-btn">
-            <i class="fas fa-layer-group"></i>
+            <i class="fas fa-thin fa-layer-group"></i>
             <span>المراحل</span>
         </div>
         <div class="nav-item" onclick="showPage('edit-shooters-page')" id="edit-shooters-btn">
@@ -1465,11 +1465,11 @@
         function updateManualTime(input) {
             let value = input.value.replace(/[^0-9.]/g, '');
             if (value.length > 2 && !value.includes('.')) {
-                value = value.slice(0, 2) + '.' + value.slice(2);
+                value = value.slice(0, 3) + '.' + value.slice(2);
             }
-            if (value.length > 5) value = value.slice(0, 5);
+            if (value.length > 6) value = value.slice(0, 6);
             const [seconds, milliseconds] = value.split('.').map(Number);
-            if (seconds > 99 || (milliseconds > 99 && milliseconds !== undefined)) value = '99.99';
+            if (seconds > 999 || (milliseconds > 99 && milliseconds !== undefined)) value = '999.99';
             input.value = value;
             timerSeconds = parseFloat(value) || 0;
             document.getElementById('timerDisplay').textContent = timerSeconds.toFixed(2);
@@ -1518,7 +1518,7 @@
         }
 
         // استبدل الدالة resetTimer بالكامل بهذه النسخة المعدلة
-                function resetTimer() {
+        function resetTimer() {
             clearInterval(timerInterval); // أوقف المؤقت إذا كان يعمل
             timerSeconds = 0;
             startTime = 0; // إعادة تعيين وقت البدء
@@ -1559,26 +1559,7 @@
              updateScore();
         }        
 
-        function updateManualTime(input) {
-            // أوقف المؤقت إذا كان يعمل عند إدخال الوقت يدويًا
-            if (isTimerRunning) {
-                toggleTimer(); // استدعاء toggle لإيقافه بشكل صحيح
-            }        
-
-            // تأكد من التعامل مع القيمة المدخلة كرقم
-            let manualTime = parseFloat(input.value);        
-
-            // تحقق إذا كانت القيمة غير صالحة أو سالبة
-            if (isNaN(manualTime) || manualTime < 0) {
-                manualTime = 0; // استخدم 0 كقيمة افتراضية
-                input.value = manualTime.toFixed(2); // قم بتحديث الحقل بالقيمة المصححة
-            }        
-
-            timerSeconds = manualTime; // قم بتعيين الوقت المنقضي بالقيمة اليدوية
-            startTime = 0; // أعد تعيين وقت البدء لأن الوقت اليدوي يتجاوز منطق المؤقت
-            updateTimerDisplay(); // قم بتحديث العرض بناءً على الإدخال اليدوي
-            updateScore(); // أعد حساب النتيجة
-        }
+        
         function resetTimer() {
             if (timerInterval) {
         clearInterval(timerInterval); // إيقاف التايمر إذا كان يعمل
@@ -2315,6 +2296,7 @@
                         <td>${totals.D}</td>
                         <td>${totals.M}</td>
                         <td>${totals.NS}</td>
+                        <td>${totalScore}</td>
                         <td>${score.time}</td>
                         <td>${score.hitFactor}</td>
                         <td>${percentage}%</td>
@@ -2342,7 +2324,7 @@
             }
         
             let csvContent = '\uFEFF'; // إضافة BOM لدعم اللغة العربية في Excel
-            csvContent += 'اسم الرامي,المرحلة,T,A,C,D,M,NS,الوقت,Hit Factor,النسبة المئوية\n';
+            csvContent += 'اسم الرامي,المرحلة,T,A,C,D,M,NS,النقاط,الوقت,Hit Factor,النسبة المئوية\n';
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 const rowData = [
@@ -2356,7 +2338,8 @@
                     cells[7].textContent,
                     cells[8].textContent,
                     cells[9].textContent,
-                    cells[10].textContent
+                    cells[10].textContent,
+                    cells[11].textContent
                 ].map(cell => `"${cell.replace(/"/g, '""')}"`);
                 csvContent += rowData.join(',') + '\n';
             });
