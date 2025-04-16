@@ -1465,11 +1465,15 @@
         function updateManualTime(input) {
             let value = input.value.replace(/[^0-9.]/g, '');
             if (value.length > 2 && !value.includes('.')) {
-                value = value.slice(0, 3) + '.' + value.slice(2);
+                value = value.slice(0, 2) + '.' + value.slice(2);
             }
-            if (value.length > 6) value = value.slice(0, 6);
-            const [seconds, milliseconds] = value.split('.').map(Number);
-            if (seconds > 999 || (milliseconds > 99 && milliseconds !== undefined)) value = '999.99';
+            if (value.length > 5) {
+                value = value.slice(0, 5);
+            }
+            const [minutes, seconds] = value.split('.').map(Number);
+            if (minutes > 99 || (seconds > 99 && seconds !== undefined)) {
+                value = '99.99';
+            }
             input.value = value;
             timerSeconds = parseFloat(value) || 0;
             document.getElementById('timerDisplay').textContent = timerSeconds.toFixed(2);
