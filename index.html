@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f0f0f0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <title>الرماية التكتيكية</title>
     <link rel="apple-touch-icon" href="tr.png">
      <!-- إضافة Manifest داخلي -->
@@ -437,6 +438,8 @@
         .slide.active {
             opacity: 1;
         }
+
+       
     </style>
 </head>
 <body>
@@ -531,7 +534,7 @@
         </div>
     </div>
 
-    <!-- Add Score Page -->
+    <!-- Add Score Page --> <!-- صفحة ادخال النتائج -->
     <div class="page" id="add-score-page">
         <div class="top-controls"> 
             
@@ -545,20 +548,19 @@
                 <i class="fa-sharp fa-solid fa-floppy-disk" style="color: #3a12af;"></i>
                 <span></span>
             </div>
+           
         </div>
         <div style="margin-bottom: 15px;">
-            <div style="font-weight: bold;">الرامي: <span id="shooter-name"></span></div>
-            <div style="display: flex; justify-content: flex-start; align-items: center; gap: 0.4em; margin-bottom: 5px;">
-                المرحلة:
-                <span id="stage-name"></span> 
-                <span id="stage-date-in-score" style="color: #30336b;"></span>   
-            </div>
-            <div style="font-weight: bold;">الأهداف: <span id="score-progress"></span></div>
+            <div style="font-weight: bold; text-align: right; padding: 5px; color: #1e3799;"> الرامي :  <span id="shooter-name"></span></div>  
+            <div style="font-weight: bold; text-align: right; padding: 5px; color: #1e3799;"> المرحلة :  <span id="stage-name"></span></div>   
+            <div style="font-weight: bold; text-align: right; padding: 5px; color: #1e3799;"> التاريخ  :  <span id="stage-date-in-score"></span></div>   
+            <div style="font-weight: bold; text-align: right; padding: 5px; color: #1e3799;"> الاهداف  :  <span id="score-progress"></span></span></div>   
+           
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
             <div class="timer-controls">
                 <input type="number" id="manualTimeInput" class="time-input" placeholder="الوقت" step="0.01" inputmode="decimal" oninput="updateManualTime(this)">
-                <span id="timerDisplay" style="font-size: 14px; font-weight: bold; width: 60px; text-align: center;">00.00</span>
+                <span id="timerDisplay" style="font-size: 14px; font-weight: bold; width: 60px; text-align: center;">000.00</span>
                 <button id="toggleTimerBtn" onclick="toggleTimer()" style="background-color: #30336b; color: white; font-style:normal; font-weight:lighter; font-size: 14px;">تشغيل</button>
                 <button class="reset-btn" onclick="resetTimer()">إعادة</button>
             </div>
@@ -591,46 +593,47 @@
     <div id="edit-shooters-page" class="page">
         <div class="container">
             <div class="header">
-                
                 <div style="padding-left: 5%; color: #3a12af;" onclick="showPage('home-page')">
                     <i class="fa-solid fa-arrow-right"></i>
                     <span></span>
                 </div>
                 <h1 id="edit-shooters-title" style="text-align: center; font-size: 22px;">الرماة</h1>
-                <div onclick="showPage('add-shooter-page')" style="padding-right: 5%;">   
-                    <i class="fa-solid fa-user-plus fa-lg" style="color: #0d47ab;"></i>
-                    <span> </span>
+                <div style="display: flex; gap: 50px; padding-right: 1%;">
+                    <div onclick="showPage('add-shooter-page')">
+                        <i class="fa-solid fa-user-plus fa-lg" style="color: #0d47ab;"></i>
+                        <span></span>
+                    </div>
+                    <div onclick="document.getElementById('import-shooters-input').click()">
+                        <i class="fa-solid fa-file-import fa-lg" style="color: #0d47ab;"></i>
+                        <span></span>
+                    </div>
                 </div>
             </div>
-            <div id="shootersList">
-                <!-- سيتم ملؤها ديناميكيًا -->
-            </div>
-            
+            <input type="file" id="import-shooters-input" accept=".xlsx, .xls" style="display: none;" onchange="importShooters(event)">
+            <div id="shootersList"></div>
         </div>
     </div>
-
     <!-- Add Shooter Page -->
     <div id="add-shooter-page" class="page">
         <div class="container">
             <div class="header">
-                
                 <div style="padding-left: 5%; color: #3a12af;" onclick="showPage('edit-shooters-page')">
                     <i class="fa-solid fa-arrow-right"></i>
                     <span></span>
                 </div>
                 <h1 style="text-align: center; font-size: 20px;" id="add-shooter-title">إضافة رامي</h1>
-                <div onclick="saveShooter()" style="font-size: 24px; padding-right:  7%;">
+                <div onclick="saveShooter()" style="font-size: 24px; padding-right: 7%;">
                     <i class="fa-sharp fa-solid fa-floppy-disk" style="color: #3a12af;"></i>
                     <span></span>
                 </div>
             </div>
             <div class="form-group">
-                <label id="first-name-label">الاسم الأول</label>
-                <input type="text" id="firstName" placeholder="الاسم الاول">
-            </div>
+                <label id="name-label">الاسم الكامل</label>
+                <input type="text" id="shooterName" placeholder="الاسم الكامل">
+            </div>  
             <div class="form-group">
-                <label id="last-name-label">الاسم الأخير</label>
-                <input type="text" id="lastName" placeholder="الاسم الاخير">
+                <label id="rank-label">الرتبة</label>
+                <input type="text" id="shooterRank" placeholder="الرتبة">
             </div>
             <div class="form-group">
                 <label id="number-label">الرقم</label>
@@ -642,7 +645,6 @@
             </div>
         </div>
     </div>
-
     <!-- Build Stages Page -->
     <div id="build-stages-page" class="page">
         <div class="container">
@@ -676,7 +678,7 @@
         </div>
     </div>
 
-    <!-- Add Stage Page -->
+   <!-- Add Stage Page -->  <!-- اضافة مرحلة -->
     <div id="add-stage-page" class="page">
         <div class="container">
             <div class="header">
@@ -696,8 +698,10 @@
                 <label id="stage-name-label">المرحلة</label>
                 <input type="text" id="stageName" placeholder="Stage" autocomplete="off">
             </div>
-           
-            
+            <div class="form-group">
+                <label id="stage-date-label">تاريخ الرماية</label>
+                <input type="date" id="stageDate" placeholder="YYYY-MM-DD">
+            </div>
             <div class="form-group">
                 <label id="round-label">الطلقات</label>
                 <input type="number" id="stageRounds" min="1" placeholder="عدد الطلقات:">
@@ -1015,10 +1019,13 @@
                     const points = stage.targets * 10;
                     stageDiv.className = 'stage-item';
                     stageDiv.innerHTML = `
-                    <div onclick="selectStage(${index})">
-                    ${stage.image ? `<img src="${stage.image}" alt="${stage.name}">` : ''}
-                    ${stage.name || 0} ${translations[currentLang].stageNameLabel} -  ${stage.targets || 0} ${translations[currentLang].targetsLabel} -  ${points} ${translations[currentLang].points} 
-                    </div>
+                        <div class="stage-details" onclick="selectStage(${index})">
+                            <strong> المرحلة:${stage.name || `${index + 1}`}</strong>
+                            <span>الأهداف: ${stage.targets || 0}</span>
+                            <span>النقاط: ${points}</span>
+                            <span>التاريخ: ${stage.date ? stage.date.split('-').reverse().join('/') : '-'}</span>
+                        </div>
+                        ${stage.image ? `<img src="${stage.image}" alt="${stage.name || `المرحلة ${index + 1}`}" class="stage-image">` : ''}
                     `;
                     stagesList.appendChild(stageDiv);
                     if (index < stages.length - 1) {
@@ -1029,7 +1036,6 @@
                 });
             }
         }
-
         function loadStages() {
             const stagesList = document.getElementById('stagesList').querySelector('tbody');
             stagesList.innerHTML = '';
@@ -1221,7 +1227,7 @@
         
                     shooterDiv.innerHTML = `
                         <div onclick="selectShooter(${index})">
-                            <strong>${shooter.firstName} ${shooter.lastName || ''}</strong> - ${shooter.team}
+                            <strong>${shooter.name || ''}</strong> - ${shooter.team || 'لا يوجد فريق'}
                             <span style="margin-right: 10px; color: #007bff;">${hitFactorText}${percentageText}</span>
                         </div>
                     `;
@@ -1274,7 +1280,13 @@
         
             const stage = stages.find(s => s.name.trim() === selectedStage);
             if (stage && stage.date) {
-                stageDateDisplay.textContent = stage.date;
+                // تنسيق التاريخ إلى DD/MM/YYYY
+                const dateParts = stage.date.split('-');
+                if (dateParts.length === 3) {
+                    stageDateDisplay.textContent = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+                } else {
+                    stageDateDisplay.textContent = stage.date;
+                }
             } else {
                 stageDateDisplay.textContent = "غير متوفر";
             }
@@ -1296,7 +1308,7 @@
             const manualTimeInput = document.getElementById('manualTimeInput');
         
             if (shooterName) {
-                shooterName.textContent = `${currentShooter.firstName} ${currentShooter.lastName || ''}`;
+                shooterName.textContent = `${currentShooter.name || ''}`;
             } else {
                 console.error('عنصر shooter-name غير موجود!');
             }
@@ -1464,14 +1476,14 @@
 
         function updateManualTime(input) {
             let value = input.value.replace(/[^0-9.]/g, '');
-            if (value.length > 2 && !value.includes('.')) {
-                value = value.slice(0, 2) + '.' + value.slice(2);
+            if (value.length > 3 && !value.includes('.')) {
+                value = value.slice(0, 3) + '.' + value.slice(3);
             }
-            if (value.length > 5) {
-                value = value.slice(0, 5);
+            if (value.length > 6) {
+                value = value.slice(0, 6);
             }
             const [minutes, seconds] = value.split('.').map(Number);
-            if (minutes > 99 || (seconds > 99 && seconds !== undefined)) {
+            if (minutes > 999 || (seconds > 99 && seconds !== undefined)) {
                 value = '99.99';
             }
             input.value = value;
@@ -1597,39 +1609,25 @@
         }
 
         function saveShooter() {
-            const lastNameInput = document.getElementById('lastName');
-            const firstNameInput = document.getElementById('firstName');
+            const shooterNameInput = document.getElementById('shooterName');
+            const shooterRankInput = document.getElementById('shooterRank');
             const shooterNumberInput = document.getElementById('shooterNumber');
-            const lastName = lastNameInput ? lastNameInput.value.trim() : '';
-            const firstName = firstNameInput ? firstNameInput.value.trim() : '';
+            const shooterName = shooterNameInput ? shooterNameInput.value.trim() : ''; 
+            const shooterRank = shooterRankInput ? shooterRankInput.value.trim() : '';        
             const shooterNumber = shooterNumberInput ? shooterNumberInput.value.trim() : '';
-
-            if (!lastName || !firstName) {
-                alert("الرجاء إدخال الاسم الأول والأخير!");
-                return;
-            }
-
-            let shooters = [];
-            try {
-                const shootersData = localStorage.getItem('shooters');
-                shooters = shootersData ? JSON.parse(shootersData) : [];
-            } catch (e) {
-                console.error('خطأ في تحميل بيانات الرماة:', e);
-                return;
-            }
+            
+            let shooters = JSON.parse(localStorage.getItem('shooters') || '[]');
             if (shooterNumber && shooters.some((s, i) => s.number === shooterNumber && (editingShooterIndex === null || i !== editingShooterIndex))) {
                 alert("رقم الرامي مكرر! الرجاء اختيار رقم آخر.");
                 return;
             }
-
             const shooterData = {
                 id: editingShooterIndex !== null ? shooters[editingShooterIndex].id : Date.now().toString(),
-                lastName: lastName,
-                firstName: firstName,
+                name: shooterName,
+                rank: shooterRank,
                 number: shooterNumber || '',
                 team: document.getElementById('shooterTeam')?.value || 'Team 1'
             };
-
             if (editingShooterIndex !== null) {
                 shooters[editingShooterIndex] = shooterData;
                 editingShooterIndex = null;
@@ -1639,8 +1637,8 @@
                 alert(translations[currentLang].saveSuccess);
             }
             localStorage.setItem('shooters', JSON.stringify(shooters));
-            if (lastNameInput) lastNameInput.value = '';
-            if (firstNameInput) firstNameInput.value = '';
+            if (shooterNameInput) shooterName.value = '';
+            if (shooterRankInput) shooterRank.value = '';
             if (shooterNumberInput) shooterNumberInput.value = '';
             const shooterTeamInput = document.getElementById('shooterTeam');
             if (shooterTeamInput) shooterTeamInput.value = '';
@@ -1648,72 +1646,59 @@
             loadShooters();
         }
 
-        function loadShooters() {
+                // دالة لتحميل الرماة
+                function loadShooters() {
             const editShootersPage = document.getElementById('edit-shooters-page');
-            if (editShootersPage && editShootersPage.classList.contains('active')) {
-                const shootersList = editShootersPage.querySelector('#shootersList');
-                if (shootersList) {
-                    shootersList.innerHTML = '';
-                    let shooters = [];
-                    try {
-                        const shootersData = localStorage.getItem('shooters');
-                        shooters = shootersData ? JSON.parse(shootersData) : [];
-                    } catch (e) {
-                        console.error('خطأ في تحليل بيانات الرماة:', e);
-                        shootersList.innerHTML = '<p>خطأ في تحميل الرماة.</p>';
-                        return;
-                    }
-                    if (shooters.length === 0) {
-                        shootersList.innerHTML = '<p>لا توجد رماة محفوظين.</p>';
-                        return;
-                    }
-                    const teams = {};
-                    shooters.forEach(shooter => {
-                        if (!teams[shooter.team]) teams[shooter.team] = [];
-                        teams[shooter.team].push(shooter);
-                    });
-                    for (let team in teams) {
-                        const teamDiv = document.createElement('div');
-                        teamDiv.className = 'team-header';
-                        teamDiv.innerHTML = `${translations[currentLang].team}: ${team}`;
-                        teams[team].forEach((shooter, index) => {
-                            const shooterDiv = document.createElement('div');
-                            shooterDiv.className = 'shooter-card';
-                            shooterDiv.innerHTML = `
-                                <div>
-                                    <strong>${shooter.firstName} ${shooter.lastName}</strong>
-                                    <div class="shooter-details">${translations[currentLang].number}: ${shooter.number || 'لا يوجد رقم'}</div>
-                                </div>
-                                <div class="shooter-details">${translations[currentLang].team}: ${shooter.team}</div>
-                                <div class="stage-actions">
-                                    <button class="edit-btn" onclick="editShooter(${shooters.indexOf(shooter)})">تعديل</button>
-                                    <button class="delete-btn" onclick="deleteShooter(${shooters.indexOf(shooter)})">حذف</button>
-                                </div>
-                            `;
-                            teamDiv.appendChild(shooterDiv);
-                        });
-                        shootersList.appendChild(teamDiv);
-                    }
-                }
+            if (!editShootersPage || !editShootersPage.classList.contains('active')) return;
+            const shootersList = editShootersPage.querySelector('#shootersList');
+            if (!shootersList) return;
+            shootersList.innerHTML = '';
+            let shooters = JSON.parse(localStorage.getItem('shooters') || '[]');
+            if (shooters.length === 0) {
+                shootersList.innerHTML = '<p>لا توجد رماة محفوظين.</p>';
+                return;
+            }
+            const teams = {};
+            shooters.forEach(shooter => {
+                const team = shooter.team || 'بدون فريق';
+                if (!teams[team]) teams[team] = [];
+                teams[team].push(shooter);
+            });
+            for (let team in teams) {
+                const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-header';
+                teamDiv.innerHTML = `${translations[currentLang].team}: ${team}`;
+                teams[team].forEach((shooter, index) => {
+                    const shooterDiv = document.createElement('div');
+                    shooterDiv.className = 'shooter-card';
+                    shooterDiv.innerHTML = `
+                        <div>
+                            <strong>${shooter.name}</strong>
+                        </div>
+                        
+                        <div class="shooter-details">${translations[currentLang].number}: ${shooter.number || 'لا يوجد رقم'}</div>
+                        <div class="shooter-details">${translations[currentLang].team}: ${shooter.team}</div>
+                        <div class="stage-actions">
+                            <button class="edit-btn" onclick="editShooter(${shooters.indexOf(shooter)})">تعديل</button>
+                            <button class="delete-btn" onclick="deleteShooter(${shooters.indexOf(shooter)})">حذف</button>
+                        </div>
+                    `;
+                    teamDiv.appendChild(shooterDiv);
+                });
+                shootersList.appendChild(teamDiv);
             }
         }
 
+        // دالة لتعديل رامي
         function editShooter(index) {
-            let shooters = [];
-            try {
-                const shootersData = localStorage.getItem('shooters');
-                shooters = shootersData ? JSON.parse(shootersData) : [];
-            } catch (e) {
-                console.error('خطأ في تحميل بيانات الرماة:', e);
-                return;
-            }
+            let shooters = JSON.parse(localStorage.getItem('shooters') || '[]');
             const shooter = shooters[index];
-            const firstName = document.getElementById('firstName');
-            const lastName = document.getElementById('lastName');
+            const shooterName = document.getElementById('shooterName');
+            const shooterRank = document.getElementById('shooterRank');
             const shooterNumber = document.getElementById('shooterNumber');
             const shooterTeam = document.getElementById('shooterTeam');
-            if (firstName) firstName.value = shooter.firstName;
-            if (lastName) lastName.value = shooter.lastName;
+            if (shooterName) shooterName.value = shooter.name || '';
+            if (shooterRank) shooterRank.value = shooter.rank || '';
             if (shooterNumber) shooterNumber.value = shooter.number || '';
             if (shooterTeam) shooterTeam.value = shooter.team || '';
             editingShooterIndex = index;
@@ -1721,7 +1706,118 @@
             if (addShooterTitle) addShooterTitle.textContent = 'تعديل رامي';
             showPage('add-shooter-page');
         }
-
+        // دالة normalizeArabic (إذا لم تكن موجودة)
+        function normalizeArabic(text) {
+            if (!text) return '';
+            // تنظيف النص من التشكيل والمسافات الزائدة
+            return text
+                .replace(/[\u0610-\u061A\u064B-\u065F]/g, '') // إزالة التشكيل
+                .replace(/\s+/g, ' ') // تقليل المسافات
+                .trim();
+        }
+        
+        function importShooters(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                alert('يرجى اختيار ملف Excel للاستيراد!');
+                return;
+            }
+        
+            // التحقق من نوع الملف
+            const validTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            if (!validTypes.includes(file.type)) {
+                alert('يرجى اختيار ملف Excel صالح (.xlsx أو .xls)!');
+                return;
+            }
+        
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // التحقق من وجود أوراق في المصنف
+                    if (!workbook.SheetNames.length) {
+                        alert('الملف لا يحتوي على أي أوراق!');
+                        return;
+                    }
+        
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    // تحويل الورقة إلى JSON مع دعم مرن للأعمدة
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+        
+                    if (jsonData.length === 0) {
+                        alert('الملف فارغ أو لا يحتوي على بيانات صالحة!');
+                        return;
+                    }
+        
+                    // افتراض أن الصف الأول هو رأس الأعمدة، والباقي بيانات
+                    const headers = jsonData[0].map(h => h.toString().trim().toLowerCase());
+                    const dataRows = jsonData.slice(1); // تجاهل الصف الأول (الرأس)
+        
+                    // تحديد فهارس الأعمدة بناءً على أسمائها
+                    const nameCol = headers.indexOf('name') !== -1 ? headers.indexOf('name') : headers.indexOf('الاسم') !== -1 ? headers.indexOf('الاسم') : 0;
+                    const rankCol = headers.indexOf('rank') !== -1 ? headers.indexOf('rank') : headers.indexOf('الرتبة') !== -1 ? headers.indexOf('الرتبة') : 1;
+                    const numberCol = headers.indexOf('number') !== -1 ? headers.indexOf('number') : headers.indexOf('الرقم') !== -1 ? headers.indexOf('الرقم') : 2;
+                    const teamCol = headers.indexOf('team') !== -1 ? headers.indexOf('team') : headers.indexOf('الفريق') !== -1 ? headers.indexOf('الفريق') : 3;
+        
+                    let shooters = JSON.parse(localStorage.getItem('shooters') || '[]');
+                    let duplicateNumbers = [];
+                    let importedCount = 0;
+        
+                    dataRows.forEach(row => {
+                        // تخطي الصفوف الفارغة
+                        if (!row[nameCol] && !row[numberCol]) return;
+        
+                        const number = row[numberCol] ? row[numberCol].toString().trim() : '';
+                        // التحقق من تكرار الرقم
+                        if (number && shooters.some(s => s.number === number)) {
+                            duplicateNumbers.push(number);
+                            return;
+                        }
+        
+                        const shooter = {
+                            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                            name: normalizeArabic(row[nameCol] ? row[nameCol].toString() : ''),
+                            rank: normalizeArabic(row[rankCol] ? row[rankCol].toString() : ''),
+                            number: number,
+                            team: normalizeArabic(row[teamCol] ? row[teamCol].toString() : 'Team 1')
+                        };
+        
+                        // التحقق من صحة البيانات
+                        if (shooter.name) {
+                            shooters.push(shooter);
+                            importedCount++;
+                        }
+                    });
+        
+                    // حفظ البيانات
+                    localStorage.setItem('shooters', JSON.stringify(shooters));
+        
+                    // تحديث واجهة المستخدم
+                    loadShooters();
+        
+                    // رسائل النتيجة
+                    let message = `تم استيراد ${importedCount} رامي بنجاح!`;
+                    if (duplicateNumbers.length > 0) {
+                        message += `\nتم تجاهل الأرقام المكررة: ${duplicateNumbers.join(', ')}`;
+                    }
+                    alert(message);
+        
+                    // إعادة تعيين حقل الإدخال
+                    event.target.value = '';
+                } catch (error) {
+                    console.error('خطأ أثناء استيراد الرماة:', error);
+                    alert('حدث خطأ أثناء استيراد الملف. يرجى التحقق من تنسيق الملف والمحاولة مرة أخرى.');
+                }
+            };
+        
+            reader.onerror = function () {
+                alert('خطأ في قراءة الملف. يرجى المحاولة مرة أخرى.');
+            };
+        
+            reader.readAsArrayBuffer(file);
+        }
         function deleteShooter(index) {
             let shooters = [];
             try {
@@ -1843,11 +1939,13 @@
             const stageTargets = document.getElementById('stageTargets');
             const stageImageUpload = document.getElementById('stageImageUpload');
             const stageImagePreview = document.getElementById('stageImagePreview');
+            const stageDate = document.getElementById('stageDate');
             if (stageName) stageName.value = '';
             if (stageRounds) stageRounds.value = '';
             if (stageTargets) stageTargets.value = '';
             if (stageImageUpload) stageImageUpload.value = '';
             if (stageImagePreview) stageImagePreview.style.display = 'none';
+            if (stageDate) stageDate.value = new Date().toISOString().split('T')[0]; // تعيين التاريخ الحالي
             currentStageImage = null;
             const editStageBtn = document.getElementById('edit-stage-btn');
             const saveStageBtn = document.getElementById('save-stage-btn');
@@ -1898,25 +1996,27 @@
             const stageName = document.getElementById('stageName');
             const stageRounds = document.getElementById('stageRounds');
             const stageTargets = document.getElementById('stageTargets');
-            
+            const stageDate = document.getElementById('stageDate');
+        
             const targetsValue = stageTargets ? parseInt(stageTargets.value, 10) || 0 : 0;
             if (isNaN(targetsValue) || targetsValue < 0) {
                 alert('الرجاء إدخال عدد صحيح للأهداف (أكبر من أو يساوي 0)');
                 return;
             }
-            // إضافة التاريخ عند إنشاء المرحلة (التاريخ الحالي كقيمة افتراضية)
-            const currentDate = new Date().toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                }).replace(/\//g, '/');
+        
+            if (!stageDate.value) {
+                alert('الرجاء إدخال تاريخ الرماية!');
+                return;
+            }
+        
             const stageData = {
                 name: stageName ? stageName.value || `Stage ${JSON.parse(localStorage.getItem('stages') || '[]').length + 1}` : `Stage ${JSON.parse(localStorage.getItem('stages') || '[]').length + 1}`,
+                date: stageDate.value,
                 rounds: stageRounds ? parseInt(stageRounds.value, 10) || 0 : 0,
                 targets: targetsValue,
                 image: currentStageImage
             };
-            
+        
             let stages = [];
             try {
                 const stagesData = localStorage.getItem('stages');
@@ -1925,12 +2025,14 @@
                 console.error('خطأ في تحميل بيانات المراحل:', e);
                 return;
             }
+        
             if (editingStageIndex !== null) {
                 stages[editingStageIndex] = stageData;
                 editingStageIndex = null;
             } else {
                 stages.push(stageData);
             }
+        
             localStorage.setItem('stages', JSON.stringify(stages));
             alert('تم حفظ المرحلة بنجاح!');
             showPage('build-stages-page');
@@ -2065,7 +2167,7 @@
                 const row = document.createElement('tr');
                 if (shooter) {
                     row.innerHTML = `
-                        <td>${shooter.firstName} ${shooter.lastName || ''}</td>
+                        <td>${shooter.name}</td>
                         <td>${score.stageId}</td>
                         <td>${score.time}</td>
                         <td>${score.totalScore}</td>
@@ -2277,7 +2379,7 @@
                 const row = document.createElement('tr');
                 if (shooter) {
                     row.innerHTML = `
-                        <td>${shooter.firstName} ${shooter.lastName || ''}</td>
+                        <td>${shooter.name}</td>
                         <td>${score.stageId}</td>
                         <td>${score.scores ? score.scores.length : 0}</td>
                         <td>${totals.A}</td>
