@@ -730,8 +730,13 @@
                     <span></span>
                 </div>
                 <h1 style="text-align: center; "> النتائج</h1>
+                 <!-- زر استيراد النتائج -->
+                <!-- زر استيراد النتائج -->
+                 <div class="button secondary" style="color: #073e9c; font-size:large; margin-inline-start: 15%;" onclick="document.getElementById('import-results-input').click()">
+                     <i class="fa-solid fa-file-import"></i>
+                 </div>
                 <!-- زر حذف جميع النتائج -->
-                <div class="button secondary" style="color: red; font-size:large; margin-inline-start:  30%;"  onclick="clearAllResults()">  
+                <div class="button secondary" style="color: red; font-size:large; margin-inline-start:  5%;"  onclick="clearAllResults()">  
                     <i class="fa-solid fa-trash-can"></i>
                 </div>
                 <span></span>
@@ -2257,7 +2262,164 @@
                 fallbackToDownload(blob, fileName);
             }
         }
+        //استيراد النتائج من ملف اكسل
+        function importResults(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                alert('يرجى اختيار ملف Excel للاستيراد!');
+                return;
+            }
         
+            // التحقق من نوع الملف
+            const validTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            if (!validTypes.includes(file.type)) {
+                alert('يرجى اختيار ملف Excel صالح (.xlsx أو .xls)!');
+                return;
+            }
+        
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+        
+                    // التحقق من وجود أوراق في المصنف
+                    if (!workbook.SheetNames.length) {
+                        alert('الملف لا يحتوي على أي أوراق!');
+                        return;
+                    }
+        
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+        
+                    if (jsonData.length === 0) {
+                        alert('الملف فارغ أو لا يحتوي على بيانات صالحة!');
+                        return;
+                    }
+        
+                    // افتراض أن الصف الأول هو رأس الأعمدة
+                    const headers = jsonData[0].map(h => normalizeArabic(h.toString().trim().toLowerCase()));
+                    const dataRows = jsonData.slice(1); // تجاهل الصف الأول (الرأس)
+        
+                    // تحديد فهارس الأعمدة بناءً على أسمائها
+                    const shooterNameCol = headers.indexOf('اسم الرامي') !== -1 ? headers.indexOf('اسم الرامي') : headers.indexOf('name') !== -1 ? headers.indexOf('name') : -1;
+                    const stageCol = headers.indexOf('المرحلة') !== -1 ? headers.indexOf('المرحلة') : headers.indexOf('stage') !== -1 ? headers.indexOf('stage') : -1;
+                    const timeCol = headers.indexOf('الوقت') !== -1 ? headers.indexOf('الوقت') : headers.indexOf('time') !== -1 ? headers.indexOf('time') : -1;
+                    const totalScoreCol = headers.indexOf('النقاط') !== -1 ? headers.indexOf('النقاط') : headers.indexOf('points') !== -1 ? headers.indexOf('points') : -1;
+                    const hitFactorCol = headers.indexOf('hit factor') !== -1 ? headers.indexOf('hit factor') : headers.indexOf('hit_factor') !== -1 ? headers.indexOf('hit_factor') : -1;
+                    const proceduralsCol = headers.indexOf('الإجراءات') !== -1 ? headers.indexOf('الإجراءات') : headers.indexOf('procedurals') !== -1 ? headers.indexOf('procedurals') : -1;
+                    const aCol = headers.indexOf('a') !== -1 ? headers.indexOf('a') : -1;
+                    const cCol = headers.indexOf('c') !== -1 ? headers.indexOf('c') : -1;
+                    const dCol = headers.indexOf('d') !== -1 ? headers.indexOf('d') : -1;
+                    const mCol = headers.indexOf('m') !== -1 ? headers.indexOf('m') : -1;
+                    const nsCol = headers.indexOf('ns') !== -1 ? headers.indexOf('ns') : -1;
+        
+                    // التحقق من وجود الأعمدة الأساسية المطلوبة
+                    if (shooterNameCol === -1 || stageCol === -1 || timeCol === -1 || totalScoreCol === -1) {
+                        alert('الملف يجب أن يحتوي على الأعمدة التالية: اسم الرامي، المرحلة، الوقت، النقاط');
+                        return;
+                    }
+        
+                    let shooterScores = JSON.parse(localStorage.getItem('shooterScores') || '[]');
+                    let shooters = JSON.parse(localStorage.getItem('shooters') || '[]');
+                    let stages = JSON.parse(localStorage.getItem('stages') || '[]');
+                    let importedCount = 0;
+                    let errors = [];
+        
+                    dataRows.forEach((row, index) => {
+                        // تخطي الصفوف الفارغة
+                        if (!row[shooterNameCol] || !row[stageCol]) return;
+        
+                        const shooterName = normalizeArabic(row[shooterNameCol].toString().trim());
+                        const stageName = normalizeArabic(row[stageCol].toString().trim());
+                        const shooter = shooters.find(s => normalizeArabic(s.name) === shooterName);
+                        const stage = stages.find(s => normalizeArabic(s.name) === stageName);
+        
+                        if (!shooter) {
+                            errors.push(`الصف ${index + 2}: الرامي "${shooterName}" غير موجود في قائمة الرماة.`);
+                            return;
+                        }
+                        if (!stage) {
+                            errors.push(`الصف ${index + 2}: المرحلة "${stageName}" غير موجودة في قائمة المراحل.`);
+                            return;
+                        }
+        
+                        // التحقق من صحة البيانات
+                        const time = parseFloat(row[timeCol]) || 0;
+                        const totalScore = parseInt(row[totalScoreCol]) || 0;
+                        const hitFactor = parseFloat(row[hitFactorCol]) || 0;
+                        const procedurals = parseInt(row[proceduralsCol]) || 0;
+        
+                        if (time <= 0) {
+                            errors.push(`الصف ${index + 2}: الوقت غير صالح للرامي "${shooterName}".`);
+                            return;
+                        }
+        
+                        // جمع تفاصيل النتائج (A, C, D, M, NS) لكل هدف
+                        const scores = [];
+                        for (let i = 1; i <= stage.targets; i++) {
+                            scores.push({
+                                target: i,
+                                A: aCol !== -1 ? parseInt(row[aCol]) || 0 : 0,
+                                C: cCol !== -1 ? parseInt(row[cCol]) || 0 : 0,
+                                D: dCol !== -1 ? parseInt(row[dCol]) || 0 : 0,
+                                M: mCol !== -1 ? parseInt(row[mCol]) || 0 : 0,
+                                NS: nsCol !== -1 ? parseInt(row[nsCol]) || 0 : 0
+                            });
+                        }
+        
+                        const scoreData = {
+                            shooterId: shooter.id,
+                            stageId: stage.name,
+                            time: time.toFixed(2),
+                            procedurals: procedurals,
+                            totalScore: totalScore,
+                            hitFactor: hitFactor,
+                            scores: scores
+                        };
+        
+                        // التحقق من وجود نتيجة سابقة لنفس الرامي والمرحلة
+                        const existingScoreIndex = shooterScores.findIndex(
+                            score => score.shooterId === shooter.id && score.stageId === stage.name
+                        );
+                        if (existingScoreIndex !== -1) {
+                            // تحديث النتيجة إذا كانت موجودة
+                            shooterScores[existingScoreIndex] = scoreData;
+                        } else {
+                            // إضافة نتيجة جديدة
+                            shooterScores.push(scoreData);
+                        }
+        
+                        importedCount++;
+                    });
+        
+                    // حفظ البيانات في localStorage
+                    localStorage.setItem('shooterScores', JSON.stringify(shooterScores));
+        
+                    // تحديث واجهة النتائج
+                    loadResults();
+        
+                    // رسائل النتيجة
+                    let message = `تم استيراد ${importedCount} نتيجة بنجاح!`;
+                    if (errors.length > 0) {
+                        message += `\nالأخطاء التالية حدثت أثناء الاستيراد:\n${errors.join('\n')}`;
+                    }
+                    alert(message);
+        
+                    // إعادة تعيين حقل الإدخال
+                    event.target.value = '';
+                } catch (error) {
+                    console.error('خطأ أثناء استيراد النتائج:', error);
+                    alert('حدث خطأ أثناء استيراد الملف. يرجى التحقق من تنسيق الملف والمحاولة مرة أخرى.');
+                }
+            };
+        
+            reader.onerror = function () {
+                alert('خطأ في قراءة الملف. يرجى المحاولة مرة أخرى.');
+            };
+        
+            reader.readAsArrayBuffer(file);
+        }
         function fallbackToDownload(blob, fileName) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
