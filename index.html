@@ -1127,36 +1127,7 @@
             showPage('stage-detail-page');
         }
        
-        function updateStageDateDetails() {
-            const stageFilter = document.getElementById('stage-filter-details');
-            const stageDateDisplay = document.getElementById('stage-date-display-details');
-            if (!stageFilter || !stageDateDisplay) {
-                console.error('عنصر فلتر المراحل أو عنصر عرض التاريخ غير موجود في صفحة تفاصيل الرماية!');
-                return;
-            }
         
-            const selectedStage = stageFilter.value.trim();
-            if (selectedStage === "") {
-                stageDateDisplay.textContent = "";
-                return;
-            }
-        
-            let stages = [];
-            try {
-                const stagesData = localStorage.getItem('stages');
-                stages = stagesData ? JSON.parse(stagesData) : [];
-            } catch (e) {
-                console.error('خطأ في تحليل بيانات المراحل:', e);
-                return;
-            }
-        
-            const stage = stages.find(s => s.name.trim() === selectedStage);
-            if (stage && stage.date) {
-                stageDateDisplay.textContent = stage.date;
-            } else {
-                stageDateDisplay.textContent = "غير متوفر";
-            }
-        }
         function loadShootersForStage() {
             const shootersList = document.getElementById('shootersList');
             const teamFilter = document.getElementById('team-filter');
@@ -2323,12 +2294,13 @@
                 stages = stagesData ? JSON.parse(stagesData) : [];
             } catch (e) {
                 console.error('خطأ في تحليل بيانات localStorage:', e);
-                detailsTable.innerHTML = '<tr><td colspan="11">خطأ في تحميل البيانات.</td></tr>';
+                detailsTable.innerHTML = '<tr><td colspan="12">خطأ في تحميل البيانات.</td></tr>';
                 return;
             }
         
             // تحميل فلتر المراحل إذا لم يتم تحميله بعد
             if (stageFilter.options.length <= 1) {
+                stageFilter.innerHTML = '<option value="">الكل</option>';
                 stages.forEach(stage => {
                     const option = document.createElement('option');
                     option.value = stage.name.trim();
@@ -2338,7 +2310,7 @@
             }
         
             if (shooterScores.length === 0) {
-                detailsTable.innerHTML = '<tr><td colspan="11">لا توجد نتائج محفوظة بعد.</td></tr>';
+                detailsTable.innerHTML = '<tr><td colspan="12">لا توجد نتائج محفوظة بعد.</td></tr>';
                 return;
             }
         
@@ -2348,7 +2320,7 @@
                 : shooterScores.filter(score => score.stageId.trim() === selectedStage);
         
             if (filteredScores.length === 0) {
-                detailsTable.innerHTML = '<tr><td colspan="11">لا توجد نتائج لهذه المرحلة.</td></tr>';
+                detailsTable.innerHTML = '<tr><td colspan="12">لا توجد نتائج لهذه المرحلة.</td></tr>';
                 return;
             }
         
@@ -2362,6 +2334,7 @@
             });
             uniqueScores.push(...scoreMap.values());
         
+            // الفرز الافتراضي حسب Hit Factor (تنازلي)
             uniqueScores.sort((a, b) => parseFloat(b.hitFactor) - parseFloat(a.hitFactor));
         
             const maxHitFactor = Math.max(...uniqueScores.map(score => parseFloat(score.hitFactor)), 0);
@@ -2418,7 +2391,71 @@
                 detailsTable.appendChild(row);
             });
         
-            updateStageDateDetails(); // تحديث التاريخ بعد تحميل التفاصيل
+            updateStageDateDetails();
+        }
+        
+        // دالة تحديث تاريخ المرحلة
+        function updateStageDateDetails() {
+            const stageFilter = document.getElementById('stage-filter-details');
+            const stageDateDisplay = document.getElementById('stage-date-display-details');
+            if (!stageFilter || !stageDateDisplay) {
+                console.error('عنصر فلتر المراحل أو عنصر عرض التاريخ غير موجود في صفحة تفاصيل الرماية!');
+                return;
+            }
+        
+            const selectedStage = stageFilter.value.trim();
+            if (selectedStage === "") {
+                stageDateDisplay.textContent = "";
+                return;
+            }
+        
+            let stages = [];
+            try {
+                const stagesData = localStorage.getItem('stages');
+                stages = stagesData ? JSON.parse(stagesData) : [];
+            } catch (e) {
+                console.error('خطأ في تحليل بيانات المراحل:', e);
+                return;
+            }
+        
+            const stage = stages.find(s => s.name.trim() === selectedStage);
+            if (stage && stage.date) {
+                stageDateDisplay.textContent = stage.date;
+            } else {
+                stageDateDisplay.textContent = "غير متوفر";
+            }
+        }
+        
+        // دالة لفرز الجدول
+        let sortDirection = -1;
+        let lastSortedColumn = 10; // افتراضي: Hit Factor
+        function sortTable(columnIndex) {
+            const table = document.getElementById('shootingDetailsTable');
+            const rows = Array.from(table.getElementsByTagName('tr'));
+        
+            if (lastSortedColumn === columnIndex) {
+                sortDirection *= -1; // عكس اتجاه الفرز إذا تم النقر على نفس العمود
+            } else {
+                sortDirection = -1; // تنازلي افتراضيًا
+                lastSortedColumn = columnIndex;
+            }
+        
+            rows.sort((a, b) => {
+                let aValue = a.cells[columnIndex].textContent.trim();
+                let bValue = b.cells[columnIndex].textContent.trim();
+        
+                // تحويل القيم إلى أرقام إذا كانت رقمية
+                if (columnIndex >= 2 && columnIndex <= 11) { // T, A, C, D, M, NS, النقاط, الوقت, Hit-F, النسبة%
+                    aValue = parseFloat(aValue.replace('%', '')) || 0;
+                    bValue = parseFloat(bValue.replace('%', '')) || 0;
+                    return sortDirection * (aValue - bValue);
+                } else { // اسم الرامي, المرحلة
+                    return sortDirection * aValue.localeCompare(bValue, 'ar');
+                }
+            });
+        
+            table.innerHTML = '';
+            rows.forEach(row => table.appendChild(row));
         }
         
         // استيراد تفاصيل الرماية من ملف اكسل
