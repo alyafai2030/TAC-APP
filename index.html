@@ -438,7 +438,11 @@
         .slide.active {
             opacity: 1;
         }
-
+       /* تعطيل زر الحفظ بشكل مرئي: */
+        .fa-floppy-disk.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
        
     </style>
 </head>
@@ -1813,17 +1817,50 @@
         }
 
         function saveShooterScore() {
-            if (!currentShooter || !currentStage || !timerSeconds) {
-                alert("يرجى التأكد من اختيار رامي ومرحلة وتسجيل وقت!");
+            console.log('بدء عملية حفظ النتيجة...');
+            console.log('currentShooter:', currentShooter);
+            console.log('currentStage:', currentStage);
+            console.log('timerSeconds:', timerSeconds);
+            console.log('manualTimeInput:', document.getElementById('manualTimeInput').value);        
+
+            // تعطيل زر الحفظ مؤقتًا
+            const saveIcon = document.querySelector('.fa-floppy-disk');
+            saveIcon.classList.add('disabled');
+            saveIcon.style.pointerEvents = 'none';        
+
+            // التحقق من وجود الرامي والمرحلة
+            if (!currentShooter || !currentStage) {
+                alert("يرجى التأكد من اختيار رامي ومرحلة!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
                 return;
-            }
-        
+            }        
+
+            // التحقق من الوقت
+            const manualTimeInput = document.getElementById('manualTimeInput').value;
+            const timeToSave = timerSeconds > 0 ? timerSeconds : (parseFloat(manualTimeInput) || 0);
+            if (timeToSave <= 0) {
+                alert("يرجى إدخال وقت صالح باستخدام المؤقت أو يدويًا!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
+            // جمع البيانات من جدول النتائج
             const totalScore = parseInt(document.getElementById('total-score').textContent) || 0;
             const hitFactor = parseFloat(document.getElementById('hit-factor').textContent) || 0;
-            const procedurals = parseInt(document.getElementById('procedurals').value) || 0;
-        
+            const procedurals = parseInt(document.getElementById('procedurals').value) || 0;        
+
             const scores = [];
             const rows = document.querySelectorAll('#scoreTable tbody tr');
+            if (rows.length === 0) {
+                alert("يرجى إدخال نتائج للأهداف!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
+            let hasValidScores = false;
             rows.forEach(row => {
                 const targetNum = parseInt(row.cells[0].textContent);
                 const targetData = {
@@ -1834,69 +1871,111 @@
                     M: parseInt(row.querySelector('.score-btn[data-type="M"]').textContent) || 0,
                     NS: parseInt(row.querySelector('.score-btn[data-type="NS"]').textContent) || 0
                 };
+                if (targetData.A > 0 || targetData.C > 0 || targetData.D > 0 || targetData.M > 0 || targetData.NS > 0) {
+                    hasValidScores = true;
+                }
                 scores.push(targetData);
-            });
-        
+            });        
+
+            if (!hasValidScores) {
+                alert("يرجى إدخال نتائج صالحة للأهداف!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
             const shooterScore = {
                 shooterId: currentShooter.id,
                 stageId: currentStage.name,
-                time: timerSeconds.toFixed(2),
+                time: timeToSave.toFixed(2),
                 procedurals: procedurals,
                 totalScore: totalScore,
                 hitFactor: hitFactor,
                 scores: scores
-            };
-        
+            };        
+
+            // التحقق من `localStorage`
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+            } catch (e) {
+                alert("التخزين المحلي ممتلئ أو غير متاح. يرجى إفراغ بعض البيانات!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
+            // حفظ النتيجة
             let shooterScores = [];
             try {
                 const scoresData = localStorage.getItem('shooterScores');
                 shooterScores = scoresData ? JSON.parse(scoresData) : [];
             } catch (e) {
-                console.error('خطأ في تحميل بيانات النتائج:', e);
-            }
-        
+                console.error('خطأ في تحليل بيانات النتائج:', e);
+                alert("حدث خطأ في تحميل بيانات النتائج!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
             const existingStageScores = shooterScores.filter(score => score.stageId === currentStage.name);
-            const isFirstScoreForStage = existingStageScores.length === 0;
-        
+            const isFirstScoreForStage = existingStageScores.length === 0;        
+
             let stages = [];
             try {
                 const stagesData = localStorage.getItem('stages');
                 stages = stagesData ? JSON.parse(stagesData) : [];
             } catch (e) {
                 console.error('خطأ في تحميل بيانات المراحل:', e);
-            }
-        
+                alert("حدث خطأ في تحميل بيانات المراحل!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
             if (isFirstScoreForStage) {
                 const currentDate = new Date().toLocaleDateString('en-GB', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric'
                 }).replace(/\//g, '/');
-        
                 const stageIndex = stages.findIndex(stage => stage.name === currentStage.name);
                 if (stageIndex !== -1) {
-                    stages[stageIndex].date = currentDate;
-                    localStorage.setItem('stages', JSON.stringify(stages));
-                    currentStage.date = currentDate;
+                    try {
+                        stages[stageIndex].date = currentDate;
+                        localStorage.setItem('stages', JSON.stringify(stages));
+                        currentStage.date = currentDate;
+                    } catch (e) {
+                        console.error('خطأ في تحديث تاريخ المرحلة:', e);
+                        alert("حدث خطأ في تحديث تاريخ المرحلة!");
+                        saveIcon.classList.remove('disabled');
+                        saveIcon.style.pointerEvents = 'auto';
+                        return;
+                    }
                 }
-            }
-        
+            }        
+
             const existingScoreIndex = shooterScores.findIndex(score => 
                 score.shooterId === currentShooter.id && score.stageId === currentStage.name
             );
             if (existingScoreIndex !== -1) {
                 shooterScores[existingScoreIndex] = shooterScore;
-                alert('تم تحديث النتيجة بنجاح!');
             } else {
                 shooterScores.push(shooterScore);
-                alert(translations[currentLang].scoreSaved);
-            }
-        
-            localStorage.setItem('shooterScores', JSON.stringify(shooterScores));
-            console.log("Saved score:", shooterScore);
-            console.log("All shooter scores:", shooterScores);
-            
-            
+            }        
+
+            try {
+                localStorage.setItem('shooterScores', JSON.stringify(shooterScores));
+                alert('تم حفظ النتيجة بنجاح!');
+            } catch (e) {
+                console.error('خطأ في حفظ بيانات النتائج:', e);
+                alert("حدث خطأ في حفظ النتائج!");
+                saveIcon.classList.remove('disabled');
+                saveIcon.style.pointerEvents = 'auto';
+                return;
+            }        
+
+            // تحديث العناصر في الواجهة
             const stageName = document.getElementById('stage-name');
             const stageDateInScore = document.getElementById('stage-date-in-score');
             if (stageName) {
@@ -1904,8 +1983,11 @@
             }
             if (stageDateInScore) {
                 stageDateInScore.textContent = currentStage.date ? currentStage.date : "غير متوفر";
-            }
-        
+            }        
+
+            // إعادة تمكين زر الحفظ والانتقال إلى الصفحة
+            saveIcon.classList.remove('disabled');
+            saveIcon.style.pointerEvents = 'auto';
             showPage('stage-detail-page');
         }
        
