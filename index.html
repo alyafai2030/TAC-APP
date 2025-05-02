@@ -443,7 +443,17 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-       
+        /* إظهار نسبة التخزين */
+        #storage-info {
+            font-weight: bold;
+            background-color: #e0f7fa;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+        }
+        #remaining-storage-percentage {
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -461,7 +471,11 @@
                 <img class="slide" src="3.png" alt="رماية تكتيكية 3">
             </div>
             <div class="controls"></div>
-            <img src="my4.png" style="width: 90px; height: 90px;" alt="صورة رمزية">
+            <!-- إضافة عنصر لعرض النسبة المتبقية -->
+            <div id="storage-info" style="text-align: center; margin-top: 10px; font-size: 14px; color: #333; width: 170px; margin: auto;">
+                نسبةالتخزين : <span id="remaining-storage-percentage">...</span>%
+            </div>
+            <img src="my4.png" style="width: 90px; height: 90px; margin-top: 40px;" alt="صورة رمزية">
         </div>
     </div>
 
@@ -955,6 +969,7 @@
                 switch (pageId) {
                     case 'home-page':
                         activeBtnId = 'home-btn';
+                        updateStorageInfo(); // تحديث النسبة المتبقية
                         break;
                     case 'enter-scores-page':
                         activeBtnId = 'enter-scores-btn';
@@ -1110,6 +1125,7 @@
             if (confirm(`هل أنت متأكد من حذف "${stages[index].name}"؟`)) {
                 stages.splice(index, 1);
                 localStorage.setItem('stages', JSON.stringify(stages));
+                updateStorageInfo(); // تحديث النسبة المتبقية
                 loadStages();
                 alert('تم حذف المرحلة بنجاح!');
             }
@@ -1620,6 +1636,7 @@
                 alert(translations[currentLang].saveSuccess);
             }
             localStorage.setItem('shooters', JSON.stringify(shooters));
+            updateStorageInfo(); // تحديث النسبة المتبقية
             if (shooterNameInput) shooterName.value = '';
             if (shooterRankInput) shooterRank.value = '';
             if (shooterNumberInput) shooterNumberInput.value = '';
@@ -1776,7 +1793,7 @@
         
                     // حفظ البيانات
                     localStorage.setItem('shooters', JSON.stringify(shooters));
-        
+                    updateStorageInfo(); // تحديث النسبة المتبقية
                     // تحديث واجهة المستخدم
                     loadShooters();
         
@@ -1813,6 +1830,7 @@
             if (confirm(`هل أنت متأكد من حذف "${shooters[index].firstName} ${shooters[index].lastName}"؟`)) {
                 shooters.splice(index, 1);
                 localStorage.setItem('shooters', JSON.stringify(shooters));
+                updateStorageInfo(); // تحديث النسبة المتبقية
                 loadShooters();
                 alert('تم حذف الرامي بنجاح!');
             }
@@ -1935,6 +1953,7 @@
                     try {
                         stages[stageIndex].date = currentDate;
                         localStorage.setItem('stages', JSON.stringify(stages));
+                        updateStorageInfo(); // تحديث النسبة المتبقية
                         currentStage.date = currentDate;
                     } catch (e) {
                         console.error('خطأ في تحديث تاريخ المرحلة:', e);
@@ -2089,6 +2108,7 @@
             }
         
             localStorage.setItem('stages', JSON.stringify(stages));
+            updateStorageInfo(); // تحديث النسبة المتبقية
             alert('تم حفظ المرحلة بنجاح!');
             showPage('build-stages-page');
             loadStages();
@@ -2359,6 +2379,7 @@
             if (confirm('هل أنت متأكد من حذف جميع النتائج؟ لا يمكن التراجع عن هذا الإجراء!')) {
                 try {
                     localStorage.removeItem('shooterScores'); // حذف جميع النتائج فقط
+                    updateStorageInfo(); // تحديث النسبة المتبقية
                     alert('تم حذف جميع النتائج بنجاح!');
                     loadResults(); // إعادة تحميل صفحة النتائج لعكس التغيير
                 } catch (e) {
@@ -2675,6 +2696,7 @@
                     });
         
                     localStorage.setItem('shooterScores', JSON.stringify(shooterScores));
+                    updateStorageInfo(); // تحديث النسبة المتبقية
                     loadShootingDetails();
                     loadResults();
         
@@ -2922,6 +2944,35 @@
         
         
         document.addEventListener('DOMContentLoaded', startSlideshow);
+
+        // دالة لحساب حجم التخزين المحلي المستخدم (بالبايت)
+        function getLocalStorageSize() {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += ((localStorage[key].length + key.length) * 2); // حجم المفتاح والقيمة بالبايت
+                }
+            }
+            return total;
+        }        
+
+        // دالة لحساب النسبة المتبقية من التخزين المحلي
+        function calculateRemainingStoragePercentage() {
+            const maxStorage = 5 * 1024 * 1024; // 5 ميغابايت بالبايت (الحد الأقصى في Safari)
+            const usedStorage = getLocalStorageSize();
+            const remainingStorage = maxStorage - usedStorage;
+            const remainingPercentage = (remainingStorage / maxStorage) * 100;
+            return remainingPercentage.toFixed(2); // إرجاع النسبة بدقة رقمين عشريين
+        }        
+
+        // دالة لتحديث عرض النسبة المتبقية
+        function updateStorageInfo() {
+            const percentageSpan = document.getElementById('remaining-storage-percentage');
+            if (percentageSpan) {
+                const remainingPercentage = calculateRemainingStoragePercentage();
+                percentageSpan.textContent = remainingPercentage;
+            }
+        }
     </script>
 </body>
 </html>
